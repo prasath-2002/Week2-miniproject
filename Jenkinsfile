@@ -18,7 +18,7 @@ pipeline {
                     // Build the image and tag it with the image name and build number
                     // e.g., 'logaprasath/portfolio:1'
                     echo "Building Docker image: ${IMAGE_NAME}:${BUILD_NUMBER}"
-                    sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} ."
+                    sh "sudo docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} ."
                 }
             }
         }
@@ -28,8 +28,8 @@ pipeline {
             steps {
                 echo "Stopping and removing old container if it exists..."
                 // This command will not fail if the container doesn't exist
-                sh "docker stop ${CONTAINER_NAME} || true"
-                sh "docker rm ${CONTAINER_NAME} || true"
+                sh "sudo docker stop ${CONTAINER_NAME} || true"
+                sh "sudo docker rm ${CONTAINER_NAME} || true"
             }
         }
 
@@ -39,7 +39,7 @@ pipeline {
                 script {
                     echo "Deploying new container from image ${IMAGE_NAME}:${BUILD_NUMBER}"
                     // Run the new container. We'll use port 8081 to avoid conflicts.
-                    sh "docker run -d -p 8081:80 --name ${CONTAINER_NAME} ${IMAGE_NAME}:${BUILD_NUMBER}"
+                    sh "sudo docker run -d -p 8081:80 --name ${CONTAINER_NAME} ${IMAGE_NAME}:${BUILD_NUMBER}"
                 }
             }
         }
@@ -50,7 +50,7 @@ pipeline {
         always {
             echo "Pipeline finished. Cleaning up old images..."
             // Best practice: remove dangling images to save disk space
-            sh "docker image prune -f"
+            sh "sudo docker image prune -f"
         }
     }
 }
