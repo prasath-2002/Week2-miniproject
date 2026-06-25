@@ -12,9 +12,16 @@ pipeline {
         stage('Deploy Application') {
             steps {
                 script {
+                    echo "Checking for existing container and deploying..."
+                    
+                    // 1. If a container named 'my-website' is running, stop it.
+                    // 2. If it exists (even if stopped), remove it.
+                    // '|| true' ensures the pipeline doesn't fail if the container doesn't exist yet.
+                    sh "docker stop my-website || true"
+                    sh "docker rm my-website || true"
+                    
                     echo "Deploying new container from image"
-                    // Run the new container. We'll use port 8081 to avoid conflicts.
-                    sh "docker run -d -p 8081:80 --name  my-website my-portfolio-app"
+                    sh "docker run -d -p 8081:80 --name my-website my-portfolio-app"
                 }
             }
         }
